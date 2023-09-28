@@ -7,7 +7,8 @@ const orderRouter = require("./routes/orderRoute");
 const app = express();
 const cookieParser = require("cookie-parser")
 const bodyParser = require('body-parser')
-const fileUpload = require('express-fileupload')
+const fileUpload = require('express-fileupload');
+const categoryRouter = require("./routes/categoryRoute");
 
 // app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use("/api/product",productRouter)
 app.use("/api/user",userRouter)
 app.use("/api/order",orderRouter)
+app.use("/api/category",categoryRouter)
 
 // route path error handling
 app.use((req, res, next) => {

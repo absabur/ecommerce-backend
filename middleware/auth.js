@@ -23,7 +23,7 @@ const isLoggedOut = async (req, res, next) => {
     try {
         const token = req.cookies.access_token;
         if (token) {
-            throw createError(400, "User is already loged in.")
+            throw createError(400, "User is already logged in.")
         }
         next()
     } catch (error) {

@@ -2,9 +2,28 @@ const createError = require("http-errors")
 const Product = require("../models/productModel.js")
 const { successResponse } = require("./responseController.js");
 const User = require("../models/userModel.js");
+const cloudinary = require("cloudinary")
 
 exports.createProduct = async (req, res, next) => {
     try {
+        let images = []
+        if (typeof req.body.images === "string") {
+            images.push(req.body.images)
+        }else{
+            images = req.body.images
+        }
+        const imagesLinks = []
+        for (let i = 0; i < images.length; i++) {
+            const result = await cloudinary.v2.uploader.upload(images[i], {
+                folder: "products",
+              })
+            imagesLinks.push({
+                public_id: result.public_id,
+                url: result.secure_url,
+            });
+        }
+        req.body.images = imagesLinks
+        
         req.body.user = req.user.id;
         const product = await Product.create(req.body)
         if (!product) {
@@ -28,7 +47,8 @@ exports.getAllProducts = async (req, res, next) => {
         const gte = Number(req.query.gte) || 0;
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 8;
-        if (category==="All") {
+        
+        if (category==="all") {
             category = ""
         }
         
@@ -89,6 +109,83 @@ exports.getAllProducts = async (req, res, next) => {
 }
 
 
+
+exports.getAllProductsByAdmin = async (req, res, next) => {
+    try {
+        const sort = req.query.sort || "";
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 8;
+        const name = req.query.name || ""
+        const id = req.query.id || ""
+        
+        let makeSort = {}
+        if (sort === "Top Sales") {
+            makeSort = {sold: -1}
+        }else if (sort === "Top Reviews") {
+            makeSort = {numOfReviews: -1}
+        }else if (sort === "High Rated") {
+            makeSort = {ratings: -1}
+        }else if (sort === "Newest Arrivals") {
+            makeSort = {createdAt: -1}
+        }else if (sort === "Price Low to High") {
+            makeSort = {price: +1}
+        }else if (sort === "Price High to Low") {
+            makeSort = {price: -1}
+        }else if (sort === "Stock Low to High") {
+            makeSort = {Stock: +1}
+        }else if (sort === "Stock High to Low") {
+            makeSort = {Stock: -1}
+        }else {
+            makeSort = {updatedAt: -1}
+        }
+
+        
+        const searchRegExp = new RegExp('.*' + name + '.*', 'i');
+        let filter = {}
+        if (name !== "" || sort !== ""){
+            filter = {
+                $or: [
+                    { name: { $regex: searchRegExp } },
+                ],
+            };
+        }
+        
+        if (id !== "") {
+            filter = {
+                _id: id
+            }
+        }
+
+        const products = await Product.find(filter)
+        .limit(limit)
+        .skip((page - 1) * limit)
+        .sort(makeSort);
+
+        if (!products) {
+            throw createError(400, "Product is not avilable")
+        }
+        const count = await Product.find(filter).countDocuments();
+        
+        res.status(200).json({
+            success: true,
+            products,
+            pagination: {
+                number_of_Products: count,
+                number_of_product_in_a_page: limit,
+                number_of_Pages: Math.ceil(count / limit),
+                currentPage: page,
+                prevPage: page - 1 > 0 ? page - 1 : null,
+                nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
+            },
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
 exports.getProduct = async (req, res, next) => {
     try {
         const id = req.params.id
@@ -113,6 +210,32 @@ exports.updateProduct = async (req, res, next) => {
         if (!product) {
             throw createError(400, "Product is not find to update")
         }
+
+        let images = []
+        if (typeof req.body.images === "string") {
+            images.push(req.body.images)
+        }else{
+            images = req.body.images
+        }
+
+        if (images !== undefined) {
+            for (let i = 0; i < product.images.length; i++) {
+                await cloudinary.v2.uploader.destroy(product.images[i].public_id);
+            }
+
+            const imagesLinks = []
+            for (let i = 0; i < images.length; i++) {
+                const result = await cloudinary.v2.uploader.upload(images[i], {
+                    folder: "products",
+                  })
+                imagesLinks.push({
+                    public_id: result.public_id,
+                    url: result.secure_url,
+                });
+            }
+            req.body.images = imagesLinks
+        }
+
         const updateOptions = {new: true, runValidators: true, useFindAndModify: false}
 
         const updateProduct = await Product.findByIdAndUpdate(id, req.body, updateOptions);
@@ -135,6 +258,11 @@ exports.deleteProduct = async (req, res, next) => {
         if (!product) {
             throw createError(401, 'product can not find to delete')
         }
+
+        for (let i = 0; i < product.images.length; i++) {
+            await cloudinary.v2.uploader.destroy(product.images[i].public_id);
+        }
+
         await Product.findByIdAndDelete(id);
         res.status(200).json({
             success: true,

@@ -67,7 +67,22 @@ exports.myOrders = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
+    const id = req.query.id;
+    const sort = req.query.sort;
+    let filter = {}
+    
+
+    if (sort) {
+      filter = {orderStatus: sort}
+    }
+    if (id) {
+      filter= {_id: id}
+    }
+    if (id == "undefined" && sort == "undefined") {
+      filter = {}
+    }
+
+    const orders = await Order.find(filter);
     let totalAmount = 0;
     orders.forEach((order) => {
       totalAmount += order.totalPrice;

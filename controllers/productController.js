@@ -2,6 +2,7 @@ const createError = require("http-errors")
 const Product = require("../models/productModel.js")
 const { successResponse } = require("./responseController.js");
 const User = require("../models/userModel.js");
+const Category = require("../models/categoryModel.js")
 const cloudinary = require("cloudinary")
 
 exports.createProduct = async (req, res, next) => {
@@ -48,10 +49,6 @@ exports.getAllProducts = async (req, res, next) => {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 8;
         
-        if (category==="all") {
-            category = ""
-        }
-        
         
         let makeSort = {}
         if (sort === "Top Sales") {
@@ -68,18 +65,33 @@ exports.getAllProducts = async (req, res, next) => {
             makeSort = {updatedAt: -1}
         }
 
+        if (category === "all") {
+            category = ""
+        }
+
         
         const searchRegExp = new RegExp('.*' + search + '.*', 'i');
-        const cateRegExp = new RegExp('.*' + category + '.*', 'i');
-        const filter = {
-            $or: [
-                { name: { $regex: searchRegExp } },
-            ],
-            $and: [
-                { price: { $lte: lte, $gte: gte  } },
-                { category: { $regex: cateRegExp } },
-            ]
-        };
+        if (category !== "") {
+            var filter = {
+                $or: [
+                    { name: { $regex: searchRegExp } },
+                ],
+                $and: [
+                    { price: { $lte: lte, $gte: gte  } },
+                    { category: category },
+                ]
+            };
+        }else{
+            var filter = {
+                $or: [
+                    { name: { $regex: searchRegExp } },
+                ],
+                $and: [
+                    { price: { $lte: lte, $gte: gte  } },
+                ]
+            };
+        }
+
         const products = await Product.find(filter)
         .limit(limit)
         .skip((page - 1) * limit)
@@ -193,6 +205,8 @@ exports.getProduct = async (req, res, next) => {
         if (!product) {
             throw createError(400, "Product is not avilable")
         }
+        const cate = await Category.findById(product.category)
+        product.category = cate.name
         res.status(200).json({
             success: true,
             product

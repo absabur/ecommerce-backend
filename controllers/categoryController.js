@@ -4,6 +4,14 @@ const Category = require("../models/categoryModel")
 const handleCreateCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
+        const data = await Category.find({})
+
+        data.forEach(element => {
+            if (element.name.toLowerCase() === name.toLowerCase().trim()) {
+                throw createError(400, "Category already exist")
+            }
+        });
+
         const newCategory = await Category.create({name})
         res.status(200).json({
             success: true,
@@ -34,6 +42,13 @@ const handleUpdateCategoryBySlug = async (req, res, next) => {
     try {
         const { name } = req.body;
         const id = req.params.id;
+        const data = await Category.find({})
+
+        data.forEach(element => {
+            if (element.name === name.trim()) {
+                throw createError(400, "Category already exist")
+            }
+        });
         const updatedCategory = await Category.findByIdAndUpdate(id, {name})
 
         if (!updatedCategory) {

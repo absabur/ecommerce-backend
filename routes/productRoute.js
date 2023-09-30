@@ -7,7 +7,7 @@ const productRouter = express.Router()
 
 productRouter.get("/", getAllProducts);
 
-productRouter.get("/admin", getAllProductsByAdmin);
+productRouter.get("/admin",isLoggedIn, isAdmin, getAllProductsByAdmin);
 
 productRouter.get("/:id([0-9a-fA-F]{24})", getProduct);
 

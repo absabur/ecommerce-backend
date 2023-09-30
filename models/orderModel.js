@@ -97,6 +97,10 @@ const orderSchema = new mongoose.Schema({
         default: "process",
         required: true,
     },
+    reason: {
+        type: String,
+        default: ""
+    },
     deliverdAt: Date,
     
 },{timestamps: true})

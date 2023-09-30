@@ -146,35 +146,71 @@ exports.reviewDone = async (req, res, next) => {
 
 exports.updateOrder = async (req, res, next) => {
   try {
+    const reason = req.body.reason;
     const order = await Order.findById(req.params.id);
     if (!order) {
       throw createError(404, "order not found with this id");
     }
 
     if (order.orderStatus === "delivered") {
-      throw createError(404, "order already delivered");
+      throw createError(404, "Order already Delivered, No Access");
+    }
+    if (order.orderStatus === "canceled") {
+      throw createError(404, "Order already Canceled, No Access");
     }
 
+    if (reason) {
+      order.reason = reason
+    } else{
+      order.reason = ""
+    }
+
+    if (req.body.status === "canceled" && order.orderStatus === "ship" || order.orderStatus === "receive"){
+      order.orderItems.forEach(async (item) => {
+        await updateStockIncrease(item.productId, item.quantity);
+      });
+    }
     order.orderStatus = req.body.status;
+    if (req.body.status === "ship") {
+      order.orderItems.forEach(async (item) => {
+        await updateStock(item.productId, item.quantity);
+      });
+    }
     if (req.body.status === "delivered") {
       order.deliverdAt = Date.now();
       order.orderItems.forEach(async (item) => {
-        await updateStock(item.product, item.quantity);
+        await updateSold(item.productId, item.quantity);
       });
     }
     await order.save({ validateBeforeSave: false });
     res.status(200).json({
       success: true,
-      order,
     });
   } catch (error) {
     next(error);
   }
 };
 
+async function updateStockIncrease(id, quantity) {
+  const product = await Product.findById(id);
+  if (!product) return;
+  product.Stock += quantity;
+  await product.save({ validateBeforeSave: false });
+}
+
 async function updateStock(id, quantity) {
   const product = await Product.findById(id);
-  product.Stock -= quantity;
+  if (!product) return;
+  if (product.Stock <= quantity) {
+    product.Stock = 0;
+  }else{
+    product.Stock -= quantity;
+  }
+  await product.save({ validateBeforeSave: false });
+}
+async function updateSold(id, quantity) {
+  const product = await Product.findById(id);
+  if (!product) return;
   product.sold += quantity;
   await product.save({ validateBeforeSave: false });
 }
@@ -185,13 +221,12 @@ exports.deleteOrder = async (req, res, next) => {
     if (!order) {
       throw createError(404, "order not found");
     }
-    if (order.orderStatus === "delivered") {
-      throw createError(401, "order already delivered");
+    if (order.orderStatus !== "canceled") {
+      throw createError(401, "Cancel Order to Delete");
     }
     await Order.findByIdAndDelete(req.params.id);
     res.status(200).json({
       success: true,
-      order,
     });
   } catch (error) {
     next(error);

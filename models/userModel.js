@@ -69,27 +69,27 @@ const userSchema = new Schema({
     address: {
         division: {
             type: String,
-            required: [true, "Please enter Division."],
+            // required: [true, "Please enter Division."],
         },
         district: {
             type: String,
-            required: [true, "Please enter District."],
+            // required: [true, "Please enter District."],
         },
         upozila: {
             type: String,
-            required: [true, "Please enter Upozila."],
+            // required: [true, "Please enter Upozila."],
         },
         address: {
             type: String,
-            required: [true, "Please enter Address."],
+            // required: [true, "Please enter Address."],
         },
         number: {
             type: String,
-            required: [true, "Please enter Number."],
+            // required: [true, "Please enter Number."],
         },
         email: {
             type: String,
-            required: [true, "Please enter email."],
+            // required: [true, "Please enter email."],
             trim: true,
             validate: [validator.isEmail, "Please Enter a valid Email"],
         }

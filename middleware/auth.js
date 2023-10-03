@@ -12,6 +12,10 @@ const isLoggedIn = async (req, res, next) => {
         if (!decoded) {
             throw createError(404, "Login with correct information.")
         }
+        const exist = await User.findById(decoded.id)
+        if (!exist) {
+            throw createError(401, "User is not exist")
+        }
         req.user = decoded;
         next()
     } catch (error) {

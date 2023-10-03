@@ -250,7 +250,28 @@ exports.getAllUsers = async (req, res, next) => {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 5;
 
-        const users = await User.find()
+        const id = req.query.id;
+        const sort = req.query.sort;
+        let filter = {}
+        
+    
+        if (sort === "admin") {
+          filter = {isAdmin: true}
+        }
+        if (sort === "ban") {
+          filter = {isBan: true}
+        }
+        if (sort === "users") {
+          filter = {}
+        }
+        if (id) {
+          filter= {_id: id}
+        }
+        if (id == "undefined" && sort == "undefined") {
+          filter = {}
+        }
+
+        const users = await User.find(filter)
         .limit(limit)
         .skip((page - 1) * limit)
         .sort({createdAt: -1});
@@ -559,10 +580,9 @@ exports.updateProfileByAdmin = async (req, res, next) => {
     try {
         const newData = {
             name: req.body.name,
-            email: req.body.email,
             isAdmin: req.body.isAdmin,
             isBan: req.body.isBan,
-        }      
+        }
         const user = await User.findById(req.params.id)
         if (!user) {
             throw createError(404, "Unable to delete Profile. User does not exists.");

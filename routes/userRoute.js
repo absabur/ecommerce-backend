@@ -1,6 +1,8 @@
 const express = require("express");
 const { registerUser, loginUser, logoutUser, ForgatePassword, resetPassword, getUserDetails, getAllUsers, updatePassword, updateProfile, getSingleUser, updateProfileByAdmin, deleteProfileByAdmin, deleteProfile, SignUpVerify, updateEmailConfirm, updateEmailRequest, addCartItem, deleteCart, addAddress, deleteAddress } = require("../controllers/userController");
 const { isLoggedIn, isAdmin } = require("../middleware/auth");
+const { validateUserRegistration } = require("../validators/auth");
+const runValidation = require("../validators/index")
 
 const userRouter = express.Router()
 
@@ -8,7 +10,7 @@ const userRouter = express.Router()
 
 userRouter.post("/signup",SignUpVerify);
 
-userRouter.post("/new",registerUser);
+userRouter.post("/new", validateUserRegistration, runValidation, registerUser);
 
 userRouter.post("/login",loginUser);
 

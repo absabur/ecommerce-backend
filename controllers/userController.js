@@ -58,13 +58,14 @@ exports.registerUser = async (req, res, next) => {
         const decoded = jwt.verify(rtoken, process.env.JWT_SIGNUP_KEY)
         if (!decoded) throw createError(401, "Unable to verify user. token has been expire or wrong token");
         const email = decoded.email
+        console.log(email);
 
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar , {
             folder: "avtars",
             width: 150,
             crop: "scale",
         })
-        const user = await User.create({name, email, password, avatar: {
+        const user = await User.create({name, email, password, address: {email},avatar: {
             public_id: myCloud.public_id,
             url: myCloud.secure_url
         }})
@@ -606,6 +607,7 @@ exports.deleteProfileByAdmin = async (req, res, next) => {
         if (!user) {
             throw createError(404, "Unable to delete Profile. User does not exists.");
         }
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
         await User.findByIdAndDelete(req.params.id);
 
         res.status(200).json({

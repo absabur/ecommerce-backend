@@ -69,17 +69,16 @@ exports.getAllOrders = async (req, res, next) => {
   try {
     const id = req.query.id;
     const sort = req.query.sort;
-    let filter = {}
-    
+    let filter = {};
 
     if (sort) {
-      filter = {orderStatus: sort}
+      filter = { orderStatus: sort };
     }
     if (id) {
-      filter= {_id: id}
+      filter = { _id: id };
     }
     if (id == "undefined" && sort == "undefined") {
-      filter = {}
+      filter = {};
     }
 
     const orders = await Order.find(filter);
@@ -109,7 +108,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
       throw createError(404, "order already on process");
     }
 
-    order.orderStatus = "process";
+    order.orderStatus = "processing";
     order.paymentInfo = {
       way,
       status,
@@ -144,6 +143,33 @@ exports.reviewDone = async (req, res, next) => {
   }
 };
 
+exports.cancelOrder = async (req, res, next) => {
+  try {
+    const reason = req.body.reason;
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      throw createError(404, "Order not found with this id");
+    }
+
+    if (order.orderStatus === "shipping") {
+      throw createError(404, "Can't Cancel, Already Shiping");
+    }
+    if (order.orderStatus === "receive") {
+      throw createError(404, "Can't Cancel, Already Reached");
+    }
+
+    order.orderStatus = "canceled";
+    order.reason = reason;
+
+    await order.save({ validateBeforeSave: false });
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.updateOrder = async (req, res, next) => {
   try {
     const reason = req.body.reason;
@@ -160,18 +186,21 @@ exports.updateOrder = async (req, res, next) => {
     }
 
     if (reason) {
-      order.reason = reason
-    } else{
-      order.reason = ""
+      order.reason = reason;
+    } else {
+      order.reason = "";
     }
 
-    if (req.body.status === "canceled" && order.orderStatus === "ship" || order.orderStatus === "receive"){
+    if (
+      (req.body.status === "canceled" && order.orderStatus === "shipping") ||
+      order.orderStatus === "receive"
+    ) {
       order.orderItems.forEach(async (item) => {
         await updateStockIncrease(item.productId, item.quantity);
       });
     }
     order.orderStatus = req.body.status;
-    if (req.body.status === "ship") {
+    if (req.body.status === "shipping") {
       order.orderItems.forEach(async (item) => {
         await updateStock(item.productId, item.quantity);
       });
@@ -203,7 +232,7 @@ async function updateStock(id, quantity) {
   if (!product) return;
   if (product.Stock <= quantity) {
     product.Stock = 0;
-  }else{
+  } else {
     product.Stock -= quantity;
   }
   await product.save({ validateBeforeSave: false });

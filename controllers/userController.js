@@ -58,7 +58,6 @@ exports.registerUser = async (req, res, next) => {
         const decoded = jwt.verify(rtoken, process.env.JWT_SIGNUP_KEY)
         if (!decoded) throw createError(401, "Unable to verify user. token has been expire or wrong token");
         const email = decoded.email
-        console.log(email);
 
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar , {
             folder: "avtars",

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const mongo_url = "mongodb://127.0.0.1:27017/ecommerce1"
+const mongo_url = process.env.mongo_url || "mongodb://127.0.0.1:27017/ecommerce1"
 
 const connectDB = async(options = {}) => {
     try {

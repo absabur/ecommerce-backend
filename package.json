@@ -4,8 +4,8 @@
   "description": "MERN stack eccomarce project. ",
   "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "build": "npm i"
   },
   "author": "Abdus Sabur",

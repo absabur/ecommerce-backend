@@ -49,7 +49,6 @@ exports.getAllProducts = async (req, res, next) => {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 8;
         
-        
         let makeSort = {}
         if (sort === "Top Sales") {
             makeSort = {sold: -1}

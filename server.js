@@ -2,7 +2,7 @@ const app = require("./app");
 require("dotenv").config();
 const cloudinary = require("cloudinary");
 const connectDB = require("./config/database.js");
-
+const hostname = '0.0.0.0'
 // Handling Uncaught Exception
 process.on("uncaughtException", (err) => {
   console.log(`Error: ${err.message}`);
@@ -10,7 +10,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const server = app.listen(process.env.PORT, async () => {
+const server = app.listen(process.env.PORT, hostname, async () => {
   console.log(`server is running at http://localhost:${process.env.PORT}`);
   await connectDB();
   await cloudinary.config({

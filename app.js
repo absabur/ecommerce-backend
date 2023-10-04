@@ -9,7 +9,6 @@ const cookieParser = require("cookie-parser")
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload');
 const categoryRouter = require("./routes/categoryRoute");
-// const path = require("path");
 
 // app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,11 +22,7 @@ app.use("/api/user",userRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/category",categoryRouter)
 
-// app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
-// });
 
 // route path error handling
 app.use((req, res, next) => {

@@ -22,7 +22,12 @@ app.use("/api/user",userRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/category",categoryRouter)
 
-
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Server is running"
+    })
+  })
 
 // route path error handling
 app.use((req, res, next) => {

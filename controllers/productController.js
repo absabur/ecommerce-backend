@@ -91,27 +91,37 @@ exports.getAllProducts = async (req, res, next) => {
             };
         }
 
-        const products = await Product.find(filter)
-        .limit(limit)
-        .skip((page - 1) * limit)
-        .sort(makeSort);
+        // const products = await Product.find(filter)
+        // .limit(limit)
+        // .skip((page - 1) * limit)
+        // .sort(makeSort);
 
-        if (!products) {
-            throw createError(400, "Product is not avilable")
-        }
-        const count = await Product.find(filter).countDocuments();
+        // if (!products) {
+        //     throw createError(400, "Product is not avilable")
+        // }
+        // const count = await Product.find(filter).countDocuments();
         
         res.status(200).json({
             success: true,
-            products,
-            pagination: {
-                number_of_Products: count,
-                number_of_product_in_a_page: limit,
-                number_of_Pages: Math.ceil(count / limit),
-                currentPage: page,
-                prevPage: page - 1 > 0 ? page - 1 : null,
-                nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
-            },
+            products: [
+                {
+                    _id: "hadgasdjghas",
+                    name: "pro 1"
+                },
+                {
+                    _id: "wthjarhshsshg",
+                    name: "pro 2"
+                }
+            ]
+            // products,
+            // pagination: {
+            //     number_of_Products: count,
+            //     number_of_product_in_a_page: limit,
+            //     number_of_Pages: Math.ceil(count / limit),
+            //     currentPage: page,
+            //     prevPage: page - 1 > 0 ? page - 1 : null,
+            //     nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
+            // },
         })
 
     } catch (error) {

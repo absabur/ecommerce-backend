@@ -1,8 +1,12 @@
 const app = require("./app");
 require("dotenv").config();
 const cloudinary = require("cloudinary");
-const connectDB = require("./config/database.js");
-const hostname = '0.0.0.0'
+// const connectDB = require("./config/database.js");
+// const hostname = '0.0.0.0'
+const mongoose = require("mongoose")
+require("dotenv").config();
+const mongo_url = process.env.mongo_url || "mongodb://127.0.0.1:27017/ecommerce2"
+
 // Handling Uncaught Exception
 process.on("uncaughtException", (err) => {
   console.log(`Error: ${err.message}`);
@@ -10,9 +14,21 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const server = app.listen(process.env.PORT, hostname, async () => {
+app.listen(process.env.PORT, async () => {
   console.log(`server is running at http://localhost:${process.env.PORT}`);
-  await connectDB();
+  try {
+    const options = { 
+      useNewUrlParser: true, 
+      useUnifiedTopology: true, 
+    }
+    await mongoose.connect(mongo_url, options)
+    console.log("db is connected.")
+    mongoose.connection.on('error', (error) => {
+        console.log(`db can not connect for ${error}`)
+    })
+} catch (error) {
+    console.log(`db can not connect for ${error.message}`)
+}
   await cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
-const mongo_url = process.env.mongo_url || "mongodb://127.0.0.1:27017/ecommerce1"
+require("dotenv").config();
+const mongo_url = process.env.mongo_url || "mongodb://127.0.0.1:27017/ecommerce2"
 
 const connectDB = async(options = {}) => {
     try {

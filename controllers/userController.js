@@ -102,7 +102,7 @@ exports.loginUser = async (req, res, next) => {
             throw createError(401, "invalid email or password");
         }
         const token = user.getJWTToken();
-        await jwtToken(token,res)
+        const tokens = await jwtToken(token,res)
         res.status(200).json({
             success: true,
             user,

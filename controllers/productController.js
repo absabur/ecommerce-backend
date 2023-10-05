@@ -64,20 +64,15 @@ exports.getAllProducts = async (req, res, next) => {
             makeSort = {updatedAt: -1}
         }
 
-        if (category === "all") {
-            category = ""
-        }
-
-        
         const searchRegExp = new RegExp('.*' + search + '.*', 'i');
-        if (category !== "") {
+
+        if (category == "" || category == 'null') {
             var filter = {
                 $or: [
                     { name: { $regex: searchRegExp } },
                 ],
                 $and: [
                     { price: { $lte: lte, $gte: gte  } },
-                    { category: category },
                 ]
             };
         }else{
@@ -87,10 +82,11 @@ exports.getAllProducts = async (req, res, next) => {
                 ],
                 $and: [
                     { price: { $lte: lte, $gte: gte  } },
+                    { category: category },
                 ]
             };
         }
-
+        
         const products = await Product.find(filter)
         .limit(limit)
         .skip((page - 1) * limit)

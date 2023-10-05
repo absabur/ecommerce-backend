@@ -10,10 +10,15 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload');
 const categoryRouter = require("./routes/categoryRoute");
 const cors = require('cors')
+require("dotenv").config()
 
 // app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors())
+const clientUrl = process.env.clintUrl
+app.use(cors({
+    origin: clientUrl,
+    credentials: true,
+}))
 app.use(fileUpload())
 app.use(cookieParser())
 app.use(express.json()); 

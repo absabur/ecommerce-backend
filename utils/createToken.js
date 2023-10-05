@@ -11,7 +11,7 @@ const createJsonWebToken = (payload, secretKey, expiresIn) => {
         const token = jwt.sign(payload, secretKey, {expiresIn});
         return token;
     } catch (error) {
-        logger.log("error","Failed to create jwt:", error)
+        console.log("error","Failed to create jwt:", error)
         throw error;
     }
 }

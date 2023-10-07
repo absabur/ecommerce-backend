@@ -24,6 +24,7 @@ const {
 const { isLoggedIn, isAdmin } = require("../middleware/auth");
 const { validateUserRegistration } = require("../validators/auth");
 const runValidation = require("../validators/index");
+const upload = require("../middleware/multer");
 
 const userRouter = express.Router();
 

@@ -2,6 +2,7 @@ const Order = require("../models/orderModel");
 const createError = require("http-errors");
 const Product = require("../models/productModel.js");
 const { successResponse } = require("./responseController.js");
+const sendEmailWithNode = require("../utils/mailSender");
 
 exports.newOrder = async (req, res, next) => {
   try {
@@ -25,6 +26,21 @@ exports.newOrder = async (req, res, next) => {
       paidAt: Date.now(),
       user: req.user.id,
     });
+    const emailData = {
+      email: shippingInfo.email,
+      subject: "Order Success",
+      html: `
+          <h2>Hello There</h2>
+          <p>Your order is placed.<br />You can cancel order before ship.</p>
+          <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders" target="_blank"> Your Orders </a> here.</p>
+      `,
+    };
+
+    try {
+      await sendEmailWithNode(emailData);
+    } catch (error) {
+      throw createError(500, "Failed to send order Confirmation email.");
+    }
     res.status(200).json({
       success: true,
       order,
@@ -212,6 +228,75 @@ exports.updateOrder = async (req, res, next) => {
       });
     }
     await order.save({ validateBeforeSave: false });
+    if (req.body.status === "shipping") {
+      const emailData = {
+        email: order?.shippingInfo?.email,
+        subject: "Order Shipping",
+        html: `
+            <h2>Hello There</h2>
+            <p>Your order is Shipped, It is on the way to delivery</p>
+            <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-ship" target="_blank"> Your Order </a> here.</p>
+        `,
+      };
+
+      try {
+        await sendEmailWithNode(emailData);
+      } catch (error) {
+        throw createError(500, "Failed to send order Confirmation email.");
+      }
+    }
+    if (req.body.status === "receive") {
+      const emailData = {
+        email: order?.shippingInfo?.email,
+        subject: "Order Reached",
+        html: `
+            <h2>Hello There</h2>
+            <p>Your order is reached to your local area, It is on the way to delivery</p>
+            <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-receive" target="_blank"> Your Order </a> here.</p>
+        `,
+      };
+
+      try {
+        await sendEmailWithNode(emailData);
+      } catch (error) {
+        throw createError(500, "Failed to send order Confirmation email.");
+      }
+    }
+    if (req.body.status === "delivered") {
+      const emailData = {
+        email: order?.shippingInfo?.email,
+        subject: "Order Delivered",
+        html: `
+            <h2>Hello There</h2>
+            <p>Leave a review to share the experience with us.</p>
+            <p><a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-review" target="_blank"> Review Order </a></p>
+        `,
+      };
+
+      try {
+        await sendEmailWithNode(emailData);
+      } catch (error) {
+        throw createError(500, "Failed to send order Confirmation email.");
+      }
+    }
+
+    if (req.body.status === "canceled") {
+      const emailData = {
+        email: order?.shippingInfo?.email,
+        subject: "Order Canceled",
+        html: `
+            <h2>Hello There</h2>
+            <p>Your order is cancel.</p>
+            <p>See other details <a style="color: tomato;" href="${process.env.clientUrl}/order/${order._id}" target="_blank"> here </a>.</p>
+        `,
+      };
+
+      try {
+        await sendEmailWithNode(emailData);
+      } catch (error) {
+        throw createError(500, "Failed to send order Confirmation email.");
+      }
+    }
     res.status(200).json({
       success: true,
     });

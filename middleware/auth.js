@@ -63,7 +63,7 @@ const inBan = async (req, res, next) => {
     try {
         const user = req.user;
         const userDetails = await User.findById(user.id)
-        if (userDetails.isBan) {
+        if (userDetails?.isBan) {
             throw createError(402, "Unfortunately you are ban now, please contact to author.")
         }
         next()

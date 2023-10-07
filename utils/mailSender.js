@@ -19,7 +19,7 @@ const sendEmailWithNode = async (emailData) => {
       html: emailData.html, // html body
     };
     const info = await transporter.sendMail(mailOptions)
-    console.log(info.response)
+    // console.log("Send Email Info: "+info.response)
   } catch (error) {
     console.log(error);
     throw error;

@@ -1,6 +1,5 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
-const bcryptjs = require("bcryptjs");
 const User = require("../models/userModel.js");
 const Product = require("../models/productModel.js");
 const { jwtToken } = require("../utils/jwtToken.js");

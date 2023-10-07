@@ -4,7 +4,10 @@ const User = require("../models/userModel");
 
 const isLoggedIn = async (req, res, next) => {
     try {
-        const token = req.cookies.access_token;
+        let token = req.cookies.access_token;
+        const cookie = req.headers.cookie
+        if (cookie.slice(0,12) === "access_token")
+        token = cookie.slice(13, cookie.lentth)
         if (!token) {
             throw createError(401, "You must login first.")
         }
@@ -25,7 +28,13 @@ const isLoggedIn = async (req, res, next) => {
 
 const isLoggedOut = async (req, res, next) => {
     try {
-        const token = req.cookies.access_token;
+        let token = req.cookies.access_token;
+        if (!token) {
+            token = req.params.token
+            if (token) {
+                throw createError(400, "User is already logged in.")
+            }
+        }
         if (token) {
             throw createError(400, "User is already logged in.")
         }
@@ -39,7 +48,7 @@ const isAdmin = async (req, res, next) => {
     try {
         const user = req.user;
         const userDetails = await User.findById(user.id)
-        if (!userDetails.isAdmin) {
+        if (userDetails.isAdmin !== true) {
             throw createError(402, "Only admin can get this info.")
         }
         next()

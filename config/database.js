@@ -4,7 +4,7 @@ const mongo_url = process.env.mongo_url || "mongodb://127.0.0.1:27017/ecommerce2
 
 const connectDB = async () => {
     try {
-        const options = { 
+        const options = {
             useNewUrlParser: true, 
             useUnifiedTopology: true, 
         }

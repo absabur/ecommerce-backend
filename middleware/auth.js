@@ -4,10 +4,12 @@ const User = require("../models/userModel");
 
 const isLoggedIn = async (req, res, next) => {
     try {
-        let token = req.cookies.access_token;
-        const cookie = req.headers.cookie
-        if (cookie.slice(0,12) === "access_token")
-        token = cookie.slice(13, cookie.lentth)
+        let token;
+        if (req.cookies.access_token !== undefined) {
+            token = req.cookies.access_token
+        }else {
+            token = req.headers.access_token
+        }
         if (!token) {
             throw createError(401, "You must login first.")
         }

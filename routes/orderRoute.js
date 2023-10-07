@@ -8,7 +8,6 @@ const {
   updateOrder,
   deleteOrder,
   updatePaymentStatus,
-  reviewStatusChange,
   reviewDone,
   cancelOrder,
 } = require("../controllers/orderController");

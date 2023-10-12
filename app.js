@@ -6,14 +6,14 @@ const userRouter = require("./routes/userRoute");
 const orderRouter = require("./routes/orderRoute");
 const app = express();
 const cookieParser = require("cookie-parser");
-const bodyParser = require('body-parser')
+// const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload");
 const categoryRouter = require("./routes/categoryRoute");
 const cors = require("cors");
 require("dotenv").config();
 
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 const clientUrl = process.env.clientUrl;
 app.use(
   cors({

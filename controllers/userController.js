@@ -564,7 +564,7 @@ exports.updateProfile = async (req, res, next) => {
       const imageId = data.avatar.public_id;
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
         folder: "avtars",
-        width: 150,
+        width: 300,
         crop: "scale",
       });
       await cloudinary.v2.uploader.destroy(imageId);

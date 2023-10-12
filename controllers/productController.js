@@ -7,7 +7,7 @@ const cloudinary = require("cloudinary")
 
 exports.createProduct = async (req, res, next) => {
     try {
-        let images = []
+        let images = req.body.images
         if (typeof req.body.images === "string") {
             images.push(req.body.images)
         }else{
@@ -290,6 +290,7 @@ exports.createProductReview = async (req, res, next) => {
         const review = {
           order: orderId,
           name: userName.name,
+          image: userName?.avatar?.url,
           reviewDate: new Date(),
           rating: Number(rating),
           comment,

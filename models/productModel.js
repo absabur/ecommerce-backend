@@ -59,6 +59,10 @@ const productSchema = new Schema({
                 type: String,
                 required: true,
             },
+            image: {
+                type: String,
+                required: true,
+            },
             reviewDate: {
                 type: String,
                 default: ""

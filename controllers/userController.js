@@ -269,24 +269,44 @@ exports.getAllUsers = async (req, res, next) => {
 
     const id = req.query.id;
     const sort = req.query.sort;
+    let name = req.query.name;
     let filter = {};
 
-    if (sort === "admin") {
-      filter = { isAdmin: true };
-    }
-    if (sort === "ban") {
-      filter = { isBan: true };
-    }
-    if (sort === "users") {
-      filter = {};
-    }
-    if (id) {
-      filter = { _id: id };
-    }
-    if (id == "undefined" && sort == "undefined") {
-      filter = {};
+
+    if (name && name.includes("@")){
+      if (sort === "admin") {
+        filter = { isAdmin: true, email: name };
+      }
+      else if (sort === "ban") {
+        filter = { isBan: true, email: name };
+      }
+      else {
+        filter = { email: name };
+      }
+    }else {
+      if (name !== "undefined") {
+        name = new RegExp('.*' + name + '.*', 'i');
+      }
+      if (sort === "admin") {
+        filter = { isAdmin: true, name: name };
+      }
+      else if (sort === "ban") {
+        filter = { isBan: true, name: name };
+      }
+      else{
+        filter = { name: name };
+      }
     }
 
+    if (id.length === 24) {
+      filter = { _id: id };
+    }
+
+
+    if (id == "undefined" && sort == "undefined" && name == "undefined") {
+      filter = {};
+    }
+    
     const users = await User.find(filter)
       .limit(limit)
       .skip((page - 1) * limit)

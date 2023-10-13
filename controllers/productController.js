@@ -76,6 +76,10 @@ exports.getAllProducts = async (req, res, next) => {
                 ]
             };
         }else{
+            if (category.length !== 24) {
+                const categoryfind = await Category.findOne({name: category})
+                category = categoryfind._id
+            }
             var filter = {
                 $or: [
                     { name: { $regex: searchRegExp } },

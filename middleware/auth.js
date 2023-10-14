@@ -10,7 +10,8 @@ const isLoggedIn = async (req, res, next) => {
         }else {
             token = req.headers.access_token
         }
-        if (!token) {
+        
+        if (!token || token === "null") {
             throw createError(401, "You must login first.")
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET)

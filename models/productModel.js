@@ -6,6 +6,24 @@ const productSchema = new Schema({
         required: [true, "Please Enter product Name"],
         trim: true,
     },
+    specification: [
+        {
+            heading: {
+                type: String,
+            },
+            details: [
+                {
+                    name: {
+                        type: String
+                    },
+                    spec: {
+                        type: String
+                    }
+                },
+            ]
+        },
+    ],
+
     description: {
         type: String,
         required: [true, "Please Enter product Description"],

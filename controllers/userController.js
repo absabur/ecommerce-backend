@@ -55,6 +55,9 @@ exports.SignUpVerify = async (req, res, next) => {
 exports.registerUser = async (req, res, next) => {
   try {
     const { name, password, confirmPassword, rtoken } = req.body;
+    if (name.includes("@")){
+      throw createError(400, "'@' is not allow in Name.");
+    }
     if (password !== confirmPassword) {
       throw createError(400, "Password and Confirm Password did not match.");
     }
@@ -571,7 +574,9 @@ exports.deleteAddress = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
   try {
     var { name, avatar } = req.body;
-
+    if (name.includes("@")){
+      throw createError(400, "'@' is not allow in Name.");
+    }
     const data = await User.findById(req.user.id);
 
     if (name === "") {

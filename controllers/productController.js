@@ -1,6 +1,5 @@
 const createError = require("http-errors")
 const Product = require("../models/productModel.js")
-const { successResponse } = require("./responseController.js");
 const User = require("../models/userModel.js");
 const Category = require("../models/categoryModel.js")
 const cloudinary = require("cloudinary")
@@ -26,6 +25,7 @@ exports.createProduct = async (req, res, next) => {
         req.body.images = imagesLinks
         
         req.body.user = req.user.id;
+        req.body.specification = JSON.parse(req.body.specification)
         const product = await Product.create(req.body)
         if (!product) {
             throw createError(404, "unable to create product")
@@ -248,7 +248,7 @@ exports.updateProduct = async (req, res, next) => {
             }
             req.body.images = imagesLinks
         }
-
+        req.body.specification = JSON.parse(req.body.specification)
         const updateOptions = {new: true, runValidators: true, useFindAndModify: false}
 
         const updateProduct = await Product.findByIdAndUpdate(id, req.body, updateOptions);

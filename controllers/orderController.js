@@ -83,8 +83,14 @@ exports.myOrders = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const id = req.query.id;
-    const sort = req.query.sort;
+    let id = req.query.id;
+    let sort = req.query.sort;
+    if (id === "null") {
+      id = ""
+    }    
+    if (sort === "null") {
+      sort = ""
+    }
     let filter = {};
 
     if (sort) {

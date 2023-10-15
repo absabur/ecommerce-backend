@@ -123,12 +123,22 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getAllProductsByAdmin = async (req, res, next) => {
     try {
-        const sort = req.query.sort || "";
+
+        let sort = req.query.sort || "";
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 8;
-        const name = req.query.name || ""
-        const id = req.query.id || ""
-        
+        let name = req.query.name || ""
+        let id = req.query.id || ""
+
+        if (id === "null") {
+            id = ""
+        } 
+        if (sort === "null") {
+            sort = ""
+        } 
+        if (name === "null") {
+            name = ""
+        } 
         let makeSort = {}
         if (sort === "Top Sales") {
             makeSort = {sold: -1}

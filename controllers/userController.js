@@ -235,6 +235,15 @@ exports.getUserDetails = async (req, res, next) => {
   try {
     const id = req.user.id;
     const user = await User.findById(id);
+
+    for (let index = 0; index < user.cart.length; index++) {
+      const product = await Product.findById(user.cart[index].productId)
+      if (product.Stock < user.cart[index].quantity) {
+        user.cart[index].stock = product.Stock
+        user.cart[index].quantity = product.Stock
+      }
+    }
+    
     res.status(201).json({
       success: true,
       user,
@@ -270,9 +279,18 @@ exports.getAllUsers = async (req, res, next) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
 
-    const id = req.query.id;
-    const sort = req.query.sort;
+    let id = req.query.id;
+    let sort = req.query.sort;
     let name = req.query.name;
+    if (id === "null") {
+      id = ""
+    } 
+    if (sort === "null") {
+        sort = ""
+    } 
+    if (name === "null") {
+        name = ""
+    } 
     let filter = {};
 
 

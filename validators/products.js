@@ -27,7 +27,7 @@ const validateProduct = [
     .trim()
     .notEmpty()
     .withMessage("Product quantity is required.")
-    .isInt({min: 1})
+    .isInt({min: 0})
     .withMessage("Product quantity must a positive number."),
 ]
 

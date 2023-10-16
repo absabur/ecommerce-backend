@@ -11,8 +11,14 @@ exports.localTime = (expire) => {
     if (date.c.hour > 12) {
       date.c.hour = date.c.hour - 12
     }
+    if (date.c.hour === 0) {
+      date.c.hour = 12
+    }
     let expireSec = (date.c.hour)*3600 + date.c.minute*60 + expire*60
     let expireHour = parseInt(expireSec/3600)
+    if (expireHour === 13) {
+      expireHour = 1
+    }
     let expireMinute = parseInt((expireSec%3600)/60)
 
     if (expireHour < 10) {

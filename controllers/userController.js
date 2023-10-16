@@ -6,6 +6,7 @@ const { jwtToken } = require("../utils/jwtToken.js");
 const sendEmailWithNode = require("../utils/mailSender.js");
 const { createJsonWebToken } = require("../utils/createToken.js");
 const cloudinary = require("cloudinary");
+const { localTime } = require("../utils/localTime.js");
 
 exports.SignUpVerify = async (req, res, next) => {
   try {
@@ -24,13 +25,28 @@ exports.SignUpVerify = async (req, res, next) => {
       "10m"
     );
 
+    const time = localTime(10);
+
+    // <div style="display: block; text-align: center;">
+    //     <img width="200" height="200" style="margin: 1rem;" src="https://res.cloudinary.com/dh96uxb54/image/upload/v1697446308/avtars/apple-touch-icon_ypdhev.png" alt="Logo" />
+    // </div>
+
     const emailData = {
       email,
       subject: "Verify Email",
       html: `
-                <h2>Hello There</h2>
-                <p>This is a gmail verification. We got a request from this gmail to signup to ABS-commerce. <br /> If you are not this requested person then ignore this email.</p>
-                <p><a href="${process.env.clientUrl}/register/${token}" target="_blank">Click here </a>to get signup form.</p>
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello There</h2>
+                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a Email verification. We got a request to signup from your Email address <br /> If you are not this requested person then ignore this Email.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/register/${token}" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to get register form.</p>
+                <p style="text-align: center;">
+                  <b style="color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Complete registration before <span style="color: black;">${time.expireTime}</span></b>
+                </p>
+              </div>
             `,
     };
 
@@ -55,7 +71,7 @@ exports.SignUpVerify = async (req, res, next) => {
 exports.registerUser = async (req, res, next) => {
   try {
     const { name, password, confirmPassword, rtoken } = req.body;
-    if (name.includes("@")){
+    if (name.includes("@")) {
       throw createError(400, "'@' is not allow in Name.");
     }
     if (password !== confirmPassword) {
@@ -157,13 +173,25 @@ exports.ForgatePassword = async (req, res, next) => {
       "10m"
     );
 
+    const time = localTime(10);
+
     const emailData = {
       email,
-      subject: "reset password",
+      subject: "Reset Password",
       html: `
-                <h2>Hello ${user.name}</h2>
-                <p>This is a reset password confirmation email. We got a request from this email to reset password to ABS-commerce. <br /> If you are not this requested person then ignore this email.</p>
-                <p><a href="${process.env.clientUrl}/profile/reset-password/${token}" target="_blank">Click here </a>to get reset password form.</p>
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello ${user.name}</h2>
+                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a confirmation Email for reset password. We got a request from your Email address to reset password. <br /> If you are not this requested person then ignore this Email.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/reset-password/${token}" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to get reset password form.</p>
+                <p style="text-align: center;">
+                  <b style=" color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Complete registration before <span style="color: black;">${time.expireTime}</span></b>
+                </p>
+
+              </div>
             `,
     };
 
@@ -237,13 +265,13 @@ exports.getUserDetails = async (req, res, next) => {
     const user = await User.findById(id);
 
     for (let index = 0; index < user.cart.length; index++) {
-      const product = await Product.findById(user.cart[index].productId)
+      const product = await Product.findById(user.cart[index].productId);
       if (product.Stock < user.cart[index].quantity) {
-        user.cart[index].stock = product.Stock
-        user.cart[index].quantity = product.Stock
+        user.cart[index].stock = product.Stock;
+        user.cart[index].quantity = product.Stock;
       }
     }
-    
+
     res.status(201).json({
       success: true,
       user,
@@ -283,38 +311,33 @@ exports.getAllUsers = async (req, res, next) => {
     let sort = req.query.sort;
     let name = req.query.name;
     if (id === "null") {
-      id = ""
-    } 
+      id = "";
+    }
     if (sort === "null") {
-        sort = ""
-    } 
+      sort = "";
+    }
     if (name === "null") {
-        name = ""
-    } 
+      name = "";
+    }
     let filter = {};
 
-
-    if (name && name.includes("@")){
+    if (name && name.includes("@")) {
       if (sort === "admin") {
         filter = { isAdmin: true, email: name };
-      }
-      else if (sort === "ban") {
+      } else if (sort === "ban") {
         filter = { isBan: true, email: name };
-      }
-      else {
+      } else {
         filter = { email: name };
       }
-    }else {
+    } else {
       if (name !== "undefined") {
-        name = new RegExp('.*' + name + '.*', 'i');
+        name = new RegExp(".*" + name + ".*", "i");
       }
       if (sort === "admin") {
         filter = { isAdmin: true, name: name };
-      }
-      else if (sort === "ban") {
+      } else if (sort === "ban") {
         filter = { isBan: true, name: name };
-      }
-      else{
+      } else {
         filter = { name: name };
       }
     }
@@ -323,11 +346,10 @@ exports.getAllUsers = async (req, res, next) => {
       filter = { _id: id };
     }
 
-
     if (id == "undefined" && sort == "undefined" && name == "undefined") {
       filter = {};
     }
-    
+
     const users = await User.find(filter)
       .limit(limit)
       .skip((page - 1) * limit)
@@ -410,16 +432,28 @@ exports.updateEmailRequest = async (req, res, next) => {
         id: req.user.id,
       },
       process.env.JWT_CHANGE_PASSWORD_KEY,
-      "5m"
+      "10m"
     );
+
+    const time = localTime(10);
+    const currentUser = await User.findById(req.user.id);
 
     const emailData = {
       email,
       subject: "Verify Email",
       html: `
-                <h2>Hello There</h2>
-                <p>This is a gmail verification. We got a gmail add request from this gmail to ABS-commerce. <br /> If you are not this requested person then ignore this email.</p>
-                <p><a href="${process.env.clientUrl}/mail-update/${token}" target="_blank">Click here </a>to update email.</p>
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello ${currentUser.name}</h2>
+                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a Email verification. We got a request to change Email from your Email address. <br /> If you are not this requested person then ignore this Email.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/mail-update/${token}" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to update email.</p>
+                <p style="text-align: center;">
+                  <b style="color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Complete registration before <span style="color: black;">${time.expireTime}</span></b>
+                </p>
+              </div>
             `,
     };
 
@@ -592,7 +626,7 @@ exports.deleteAddress = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
   try {
     var { name, avatar } = req.body;
-    if (name.includes("@")){
+    if (name.includes("@")) {
       throw createError(400, "'@' is not allow in Name.");
     }
     const data = await User.findById(req.user.id);

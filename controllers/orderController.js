@@ -1,9 +1,9 @@
 const Order = require("../models/orderModel");
 const createError = require("http-errors");
 const Product = require("../models/productModel.js");
-const { successResponse } = require("./responseController.js");
 const sendEmailWithNode = require("../utils/mailSender");
 const { localTime } = require("../utils/localTime");
+const User = require("../models/userModel")
 
 exports.newOrder = async (req, res, next) => {
   try {
@@ -28,14 +28,22 @@ exports.newOrder = async (req, res, next) => {
       updateDate: await localTime(0),
       user: req.user.id,
     });
+    const user = await User.findById(req.user.id)
     const emailData = {
       email: shippingInfo.email,
       subject: "Order Success",
       html: `
-          <h2>Hello There</h2>
-          <p>Your order is placed.<br />You can cancel order before ship.</p>
-          <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders" target="_blank"> Your Orders </a> here.</p>
-      `,
+            <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+              <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+              <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user.name}</h2>
+              <p style="font-size: 20px; font-weight: 500; text-align: center; color: tomato;">Order Successfull</p>
+              <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Your order is placed.<br />You can cancel order before ship.</p>
+              <p style="text-align: center;">
+                <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/myorders" target="_blank">Click Here </a>
+              </p>
+              <p style="text-align: center; font-size: 18px; color: black;">to Show Your Orders </p>
+            </div>
+          `,
     };
 
     try {
@@ -240,14 +248,22 @@ exports.updateOrder = async (req, res, next) => {
     order.updateDate = await localTime(0);
     await order.save({ validateBeforeSave: false });
     if (req.body.status === "shipping") {
+      const user = await User.findById(req.user.id)
       const emailData = {
         email: order?.shippingInfo?.email,
         subject: "Order Shipping",
         html: `
-            <h2>Hello There</h2>
-            <p>Your order is Shipped, It is on the way to delivery</p>
-            <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-ship" target="_blank"> Your Order </a> here.</p>
-        `,
+            <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+              <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+              <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user?.name}</h2>
+              <p style="font-size: 20px; font-weight: 500; text-align: center; color: tomato;">Order Shipping</p>
+              <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Your order is Shipped, It is on the way to delivery</p>
+              <p style="text-align: center;">
+                <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/myorders/to-ship" target="_blank">Click Here </a>
+              </p>
+              <p style="text-align: center; font-size: 18px; color: black;">to Show Your Order</p>
+            </div>
+          `,
       };
 
       try {
@@ -257,14 +273,22 @@ exports.updateOrder = async (req, res, next) => {
       }
     }
     if (req.body.status === "receive") {
+      const user = await User.findById(req.user.id)
       const emailData = {
         email: order?.shippingInfo?.email,
         subject: "Order Reached",
         html: `
-            <h2>Hello There</h2>
-            <p>Your order is reached to your local area, It is on the way to delivery</p>
-            <p>Show <a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-receive" target="_blank"> Your Order </a> here.</p>
-        `,
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user?.name}</h2>
+                <p style="font-size: 20px; font-weight: 500; text-align: center; color: tomato;">Order Reached to Local Area</p>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Your order is reached to your local area, It is on the way to delivery.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/myorders/to-receive" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to Show Your Order</p>
+              </div>
+            `,
       };
 
       try {
@@ -274,14 +298,22 @@ exports.updateOrder = async (req, res, next) => {
       }
     }
     if (req.body.status === "delivered") {
+      const user = await User.findById(req.user.id)
       const emailData = {
         email: order?.shippingInfo?.email,
         subject: "Order Delivered",
         html: `
-            <h2>Hello There</h2>
-            <p>Leave a review to share the experience with us.</p>
-            <p><a style="color: tomato;" href="${process.env.clientUrl}/myorders/to-review" target="_blank"> Review Order </a></p>
-        `,
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user?.name}</h2>
+                <p style="font-size: 20px; font-weight: 500; text-align: center; color: tomato;">Order Delivered</p>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Leave a review to share the experience with us.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/myorders/to-review" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to Review Order</p>
+              </div>
+            `,
       };
 
       try {
@@ -292,14 +324,22 @@ exports.updateOrder = async (req, res, next) => {
     }
 
     if (req.body.status === "canceled") {
+      const user = await User.findById(req.user.id)
       const emailData = {
         email: order?.shippingInfo?.email,
         subject: "Order Canceled",
         html: `
-            <h2>Hello There</h2>
-            <p>Your order is cancel.</p>
-            <p>See other details <a style="color: tomato;" href="${process.env.clientUrl}/order/${order._id}" target="_blank"> here </a>.</p>
-        `,
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user?.name}</h2>
+                <p style="font-size: 20px; font-weight: 500; text-align: center; color: tomato;">Order Canceled</p>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Your order was canceled due to ${order.reason}</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/order/${order._id}" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to See Order Details</p>
+              </div>
+            `,
       };
 
       try {

@@ -93,8 +93,13 @@ const userSchema = new Schema({
             trim: true,
             validate: [validator.isEmail, "Please Enter a valid Email"],
         }
+    },
+    createDate: {
+        type: Object,
+    },
+    updateDate: {
+        type: Object,
     }
-
 }, {timestamps: true});
 
 userSchema.pre("save", async function(next){

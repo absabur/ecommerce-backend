@@ -3,6 +3,7 @@ const createError = require("http-errors");
 const Product = require("../models/productModel.js");
 const { successResponse } = require("./responseController.js");
 const sendEmailWithNode = require("../utils/mailSender");
+const { localTime } = require("../utils/localTime");
 
 exports.newOrder = async (req, res, next) => {
   try {
@@ -23,7 +24,8 @@ exports.newOrder = async (req, res, next) => {
       shippingFee,
       totalPrice,
       orderStatus,
-      paidAt: Date.now(),
+      createDate: await localTime(0),
+      updateDate: await localTime(0),
       user: req.user.id,
     });
     const emailData = {
@@ -86,10 +88,10 @@ exports.getAllOrders = async (req, res, next) => {
     let id = req.query.id;
     let sort = req.query.sort;
     if (id === "null") {
-      id = ""
-    }    
+      id = "";
+    }
     if (sort === "null") {
-      sort = ""
+      sort = "";
     }
     let filter = {};
 
@@ -136,6 +138,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
       status,
       transition,
     };
+    order.paidAt = await localTime(0);
 
     await order.save({ validateBeforeSave: false });
     res.status(200).json({
@@ -182,6 +185,7 @@ exports.cancelOrder = async (req, res, next) => {
 
     order.orderStatus = "canceled";
     order.reason = reason;
+    order.updateDate = await localTime(0);
 
     await order.save({ validateBeforeSave: false });
     res.status(200).json({
@@ -228,11 +232,12 @@ exports.updateOrder = async (req, res, next) => {
       });
     }
     if (req.body.status === "delivered") {
-      order.deliverdAt = Date.now();
+      order.deliverdAt = await localTime(0);
       order.orderItems.forEach(async (item) => {
         await updateSold(item.productId, item.quantity);
       });
     }
+    order.updateDate = await localTime(0);
     await order.save({ validateBeforeSave: false });
     if (req.body.status === "shipping") {
       const emailData = {

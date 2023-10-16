@@ -78,8 +78,7 @@ const orderSchema = new mongoose.Schema(
       transition: String,
     },
     paidAt: {
-      type: Date,
-      required: true,
+      type: Object,
     },
     itemsPrice: {
       type: Number,
@@ -105,7 +104,13 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    deliverdAt: Date,
+    deliverdAt: Object,
+    createDate: {
+        type: Object,
+    },
+    updateDate: {
+        type: Object,
+    }
   },
   { timestamps: true }
 );

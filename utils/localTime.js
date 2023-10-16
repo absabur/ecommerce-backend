@@ -42,6 +42,7 @@ exports.localTime = (expire) => {
     }
     let expireTime = expireHour+":"+expireMinute+" "+Eampm
 
+    // let sort = date.c.year*8760 + date.c.month*720 + date.c.day*24 + date.c.hour + date.c.minute/60 + date.c.second/3600 + date.c.millisecond/360000
 
     if (date.c.hour < 10) {
       date.c.hour = "0"+date.c.hour
@@ -60,8 +61,8 @@ exports.localTime = (expire) => {
     }
     // `Date: ${date.toLocaleString(DateTime.DATE_FULL)} Time: ${date.toLocaleString(DateTime.TIME_24_WITH_LONG_OFFSET)}`
     const dateObject = {
-      date: `${date.toLocaleString(DateTime.DATE_FULL)}`,
-      time: `${date.toLocaleString(DateTime.TIME_24_WITH_LONG_OFFSET)}`,
+      date: date.toLocaleString(DateTime.DATE_FULL),
+      time: date.toLocaleString(DateTime.TIME_24_WITH_LONG_OFFSET),
       formatedTime: date.c.hour+":"+date.c.minute+":"+date.c.second+" "+ampm,
       expireTime,
       month: Number(date.c.month),

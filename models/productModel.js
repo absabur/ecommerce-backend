@@ -82,8 +82,7 @@ const productSchema = new Schema({
                 required: true,
             },
             reviewDate: {
-                type: String,
-                default: ""
+                type: Object,
             },
             rating: {
                 type: Number,
@@ -101,6 +100,12 @@ const productSchema = new Schema({
         ref: "User",
         required: true,
     },
+    createDate: {
+        type: Object,
+    },
+    updateDate: {
+        type: Object,
+    }
 }, {timestamps: true})
 
 const Product = model('Product', productSchema)

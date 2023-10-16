@@ -1,5 +1,6 @@
 const createError = require("http-errors");
-const Category = require("../models/categoryModel")
+const Category = require("../models/categoryModel");
+const { localTime } = require("../utils/localTime");
 
 const handleCreateCategory = async (req, res, next) => {
     try {
@@ -11,8 +12,10 @@ const handleCreateCategory = async (req, res, next) => {
                 throw createError(400, "Category already exist")
             }
         });
+        let createDate = await localTime(0)
+        let updateDate = await localTime(0)
 
-        const newCategory = await Category.create({name})
+        const newCategory = await Category.create({name, createDate, updateDate})
         res.status(200).json({
             success: true,
             newCategory,
@@ -49,7 +52,8 @@ const handleUpdateCategoryBySlug = async (req, res, next) => {
                 throw createError(400, "Category already exist")
             }
         });
-        const updatedCategory = await Category.findByIdAndUpdate(id, {name})
+        let updateDate = await localTime(0)
+        const updatedCategory = await Category.findByIdAndUpdate(id, {name, updateDate})
 
         if (!updatedCategory) {
             throw createError(404, "category not found to update.")

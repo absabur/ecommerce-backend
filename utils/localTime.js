@@ -1,7 +1,7 @@
 const{ DateTime } = require('luxon');
 
 exports.localTime = (expire) => {
-    let date = DateTime.local();
+    let date = DateTime.now().setZone('UTC+6')
     let ampm = ""
     if (date.c.hour >=12 && date.c.hour <=23) {
       ampm = "PM"
@@ -14,20 +14,25 @@ exports.localTime = (expire) => {
     let expireSec = (date.c.hour)*3600 + date.c.minute*60 + expire*60
     let expireHour = parseInt(expireSec/3600)
     let expireMinute = parseInt((expireSec%3600)/60)
-    let Eampm;
-    if (expireHour >=12 && expireHour <=23) {
-        Eampm = "PM"
-    }else {
-        Eampm = "AM"
-    }
-    if (expireHour > 12) {
-        expireHour = expireHour - 12
-    }
+
     if (expireHour < 10) {
         expireHour = "0"+expireHour
     }
     if (expireMinute < 10) {
         expireMinute = "0"+expireMinute
+    }
+    let Eampm;
+    if (ampm === "AM" && expireHour < 12) {
+      Eampm = "AM"
+    }
+    if (ampm === "PM" && expireHour < 12) {
+      Eampm = "PM"
+    }
+    if (ampm === "AM" && expireHour === 12) {
+      Eampm = "PM"
+    }
+    if (ampm === "PM" && expireHour === 12) {
+      Eampm = "AM"
     }
     let expireTime = expireHour+":"+expireMinute+" "+Eampm
 

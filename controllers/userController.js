@@ -37,10 +37,10 @@ exports.SignUpVerify = async (req, res, next) => {
       html: `
               <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
                 <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
-                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello There</h2>
-                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a Email verification. We got a request to signup from your Email address <br /> If you are not this requested person then ignore this Email.</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello There</h2>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">This is a Email verification. We got a request to signup from your Email address <br /> If you are not this requested person then ignore this Email.</p>
                 <p style="text-align: center;">
-                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/register/${token}" target="_blank">Click Here </a>
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/register/${token}" target="_blank">Click Here </a>
                 </p>
                 <p style="text-align: center; font-size: 18px; color: black;">to get register form.</p>
                 <p style="text-align: center;">
@@ -181,10 +181,10 @@ exports.ForgatePassword = async (req, res, next) => {
       html: `
               <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
                 <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
-                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello ${user.name}</h2>
-                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a confirmation Email for reset password. We got a request from your Email address to reset password. <br /> If you are not this requested person then ignore this Email.</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user.name}</h2>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">This is a confirmation Email for reset password. We got a request from your Email address to reset password. <br /> If you are not this requested person then ignore this Email.</p>
                 <p style="text-align: center;">
-                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/reset-password/${token}" target="_blank">Click Here </a>
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/reset-password/${token}" target="_blank">Click Here </a>
                 </p>
                 <p style="text-align: center; font-size: 18px; color: black;">to get reset password form.</p>
                 <p style="text-align: center;">
@@ -444,10 +444,10 @@ exports.updateEmailRequest = async (req, res, next) => {
       html: `
               <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
                 <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
-                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: #34eb34;">Hello ${currentUser.name}</h2>
-                <p style="margin: 0 auto; font-size: 22px; text-align: center; color: black;">This is a Email verification. We got a request to change Email from your Email address. <br /> If you are not this requested person then ignore this Email.</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${currentUser.name}</h2>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">This is a Email verification. We got a request to change Email from your Email address. <br /> If you are not this requested person then ignore this Email.</p>
                 <p style="text-align: center;">
-                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/mail-update/${token}" target="_blank">Click Here </a>
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;" href="${process.env.clientUrl}/mail-update/${token}" target="_blank">Click Here </a>
                 </p>
                 <p style="text-align: center; font-size: 18px; color: black;">to update email.</p>
                 <p style="text-align: center;">

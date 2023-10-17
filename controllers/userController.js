@@ -192,9 +192,8 @@ exports.ForgatePassword = async (req, res, next) => {
                 </p>
                 <p style="text-align: center; font-size: 18px; color: black;">to get reset password form.</p>
                 <p style="text-align: center;">
-                  <b style=" color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Complete registration before <span style="color: black;">${time.expireTime}</span></b>
+                  <b style=" color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Reset Password before <span style="color: black;">${time.expireTime}</span></b>
                 </p>
-
               </div>
             `,
     };
@@ -457,7 +456,7 @@ exports.updateEmailRequest = async (req, res, next) => {
                 </p>
                 <p style="text-align: center; font-size: 18px; color: black;">to update email.</p>
                 <p style="text-align: center;">
-                  <b style="color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Complete registration before <span style="color: black;">${time.expireTime}</span></b>
+                  <b style="color: red; font-size: 20px; text-align: center;">This Email will expires in <span style="color: black;">${time.expireTime}</span>, Verify Email before <span style="color: black;">${time.expireTime}</span></b>
                 </p>
               </div>
             `,
@@ -678,6 +677,9 @@ exports.updateProfile = async (req, res, next) => {
 exports.deleteProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      throw createError(400, "No user find to delete.");
+    }
     await User.findByIdAndDelete(req.user.id);
     res.clearCookie("access_token");
     await cloudinary.v2.uploader.destroy(user.avatar.public_id);
@@ -686,9 +688,15 @@ exports.deleteProfile = async (req, res, next) => {
       email: user?.email,
       subject: "Account Deleted",
       html: `
-                <h2>Hello There</h2>
-                <p>Your ABS Ecommerce account is deleted successfully.</p>
-                <p>You can create account again from <a style="color: tomato;" href="${process.env.clientUrl}" target="_blank"> there</a> , if you want.</p>
+              <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user.name}</h2>
+                <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;">Your ABS Ecommerce account is deleted successfully.</p>
+                <p style="text-align: center;">
+                  <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;"  href="${process.env.clientUrl}" target="_blank">Click Here </a>
+                </p>
+                <p style="text-align: center; font-size: 18px; color: black;">to visit us again.</p>
+              </div>
             `,
     };
 
@@ -716,6 +724,29 @@ exports.updateProfileByAdmin = async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (!user) {
       throw createError(404, "Unable to delete Profile. User does not exists.");
+    }
+    if (req.body.isAdmin === true) {
+      const emailData = {
+        email: user?.email,
+        subject: "Promoted as Admin",
+        html: `
+                <div style="background-color: rgba(175, 175, 175, 0.455); width: 100%; min-width: 350px; padding: 1rem; box-sizing: border-box;">
+                  <p style="font-size: 25px; font-weight: 500; text-align: center; color: tomato;">ABS E-Commerce</p>
+                  <h2 style="font-size: 30px; font-weight: 700; text-align: center; color: green;">Hello ${user.name}</h2>
+                  <p style="margin: 0 auto; font-size: 22px; font-weight: 500; text-align: center; color: black;"><span style="color: #141f2a;">Congratulation,</span> <br /> You promoted as an Admin of ABS E-Commerce. Now you can access all of admin routes.</p>
+                  <p style="text-align: center;">
+                    <a style="margin: 0 auto; text-align: center; background-color: #34eb34; font-size: 25px; box-shadow: 0 0 5px black; color: black; font-weight: 700; padding: 5px 10px; text-decoration: none;"  href="${process.env.clientUrl}/admin/dashboard" target="_blank">Click Here </a>
+                  </p>
+                  <p style="text-align: center; font-size: 18px; color: black;">to visit admin Dashboard.</p>
+                </div>
+              `,
+      };
+  
+      try {
+        await sendEmailWithNode(emailData);
+      } catch (error) {
+        throw createError(500, "Failed to send order Confirmation email.");
+      }
     }
 
     const updatedUser = await User.findByIdAndUpdate(req.params.id, newData, {

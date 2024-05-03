@@ -17,14 +17,16 @@ app.use(express.urlencoded({ extended: true }));
 const clientUrl = process.env.clientUrl;
 app.use(
   cors({
-    origin: clientUrl,
+    origin: [clientUrl, "http://localhost:3000", "http://127.0.0.1"],
     credentials: true,
   })
 );
 
-app.use(fileUpload({
-  limits: { fileSize: 50 * 1024 * 1024 },
-}));
+app.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 },
+  })
+);
 app.use(cookieParser());
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));

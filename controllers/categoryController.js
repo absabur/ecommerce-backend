@@ -56,7 +56,7 @@ const handleUpdateCategoryBySlug = async (req, res, next) => {
         const updatedCategory = await Category.findByIdAndUpdate(id, {name, updateDate})
 
         if (!updatedCategory) {
-            throw createError(404, "category not found to update.")
+            throw createError(404, "Category not found to update.")
         }
         res.status(200).json({
             success: true,
@@ -72,7 +72,7 @@ const handleDeleteCategoryBySlug = async (req, res, next) => {
         const name = req.params.name;
         const deletedCategory = await Category.findOneAndDelete({name})
         if (!deletedCategory) {
-            throw createError(404, "category not found to delete.")
+            throw createError(404, "Category not found to delete.")
         }
         res.status(200).json({
             success: true,

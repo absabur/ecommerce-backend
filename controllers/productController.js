@@ -339,7 +339,7 @@ exports.getProductReviews = async (req, res, next) => {
     const product = await Product.findById(req.query.id);
 
     if (!product) {
-      throw createError(404, "product not found");
+      throw createError(404, "Product not found");
     }
     res.status(200).json({
       success: true,
@@ -356,7 +356,7 @@ exports.deleteReview = async (req, res, next) => {
     const product = await Product.findById(req.query.productId);
 
     if (!product) {
-      throw createError(404, "product not found");
+      throw createError(404, "Product not found");
     }
 
     const reviews = product.reviews.filter(

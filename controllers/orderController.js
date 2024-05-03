@@ -68,7 +68,7 @@ exports.getSingleOrder = async (req, res, next) => {
       "name email"
     );
     if (!order) {
-      throw createError(404, "order not found with this id");
+      throw createError(404, "Order not found with this id");
     }
     res.status(200).json({
       success: true,
@@ -133,7 +133,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
     const order = await Order.findById(req.params.id);
     const { way, status, transition } = req.body;
     if (!order) {
-      throw createError(404, "order not found with this id");
+      throw createError(404, "Order not found with this id");
     }
 
     if (order.orderStatus !== "pay") {
@@ -209,7 +209,7 @@ exports.updateOrder = async (req, res, next) => {
     const reason = req.body.reason;
     const order = await Order.findById(req.params.id);
     if (!order) {
-      throw createError(404, "order not found with this id");
+      throw createError(404, "Order not found with this id");
     }
 
     if (order.orderStatus === "delivered") {
@@ -384,7 +384,7 @@ exports.deleteOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) {
-      throw createError(404, "order not found");
+      throw createError(404, "Order not found");
     }
     if (order.orderStatus !== "canceled") {
       throw createError(401, "Cancel Order to Delete");

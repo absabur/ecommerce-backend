@@ -27,8 +27,8 @@ exports.createProduct = async (req, res, next) => {
 
     req.body.user = req.user.id;
     req.body.specification = JSON.parse(req.body.specification);
-    req.body.createDate = await localTime(0);
-    req.body.updateDate = await localTime(0);
+    req.body.createDate = localTime(0);
+    req.body.updateDate = localTime(0);
     const product = await Product.create(req.body);
     if (!product) {
       throw createError(404, "unable to create product");
@@ -242,7 +242,7 @@ exports.updateProduct = async (req, res, next) => {
       req.body.images = imagesLinks;
     }
     req.body.specification = JSON.parse(req.body.specification);
-    req.body.updateDate = await localTime(0);
+    req.body.updateDate = localTime(0);
 
     const updateOptions = {
       new: true,
@@ -295,7 +295,7 @@ exports.createProductReview = async (req, res, next) => {
       order: orderId,
       name: userName.name,
       image: userName?.avatar?.url,
-      reviewDate: await localTime(0),
+      reviewDate: localTime(0),
       rating: Number(rating),
       comment,
     };

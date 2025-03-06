@@ -24,8 +24,8 @@ exports.newOrder = async (req, res, next) => {
       shippingFee,
       totalPrice,
       orderStatus,
-      createDate: await localTime(0),
-      updateDate: await localTime(0),
+      createDate: localTime(0),
+      updateDate: localTime(0),
       user: req.user.id,
     });
     const user = await User.findById(req.user.id)
@@ -146,7 +146,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
       status,
       transition,
     };
-    order.paidAt = await localTime(0);
+    order.paidAt = localTime(0);
 
     await order.save({ validateBeforeSave: false });
     res.status(200).json({
@@ -193,7 +193,7 @@ exports.cancelOrder = async (req, res, next) => {
 
     order.orderStatus = "canceled";
     order.reason = reason;
-    order.updateDate = await localTime(0);
+    order.updateDate = localTime(0);
 
     await order.save({ validateBeforeSave: false });
     res.status(200).json({
@@ -240,12 +240,12 @@ exports.updateOrder = async (req, res, next) => {
       });
     }
     if (req.body.status === "delivered") {
-      order.deliverdAt = await localTime(0);
+      order.deliverdAt = localTime(0);
       order.orderItems.forEach(async (item) => {
         await updateSold(item.productId, item.quantity);
       });
     }
-    order.updateDate = await localTime(0);
+    order.updateDate = localTime(0);
     await order.save({ validateBeforeSave: false });
     if (req.body.status === "shipping") {
       const user = await User.findById(req.user.id)

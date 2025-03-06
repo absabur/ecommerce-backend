@@ -12,8 +12,8 @@ const handleCreateCategory = async (req, res, next) => {
                 throw createError(400, "Category already exist")
             }
         });
-        let createDate = await localTime(0)
-        let updateDate = await localTime(0)
+        let createDate = localTime(0)
+        let updateDate = localTime(0)
 
         const newCategory = await Category.create({name, createDate, updateDate})
         res.status(200).json({
@@ -52,7 +52,7 @@ const handleUpdateCategoryBySlug = async (req, res, next) => {
                 throw createError(400, "Category already exist")
             }
         });
-        let updateDate = await localTime(0)
+        let updateDate = localTime(0)
         const updatedCategory = await Category.findByIdAndUpdate(id, {name, updateDate})
 
         if (!updatedCategory) {

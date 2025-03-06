@@ -22,10 +22,10 @@ exports.SignUpVerify = async (req, res, next) => {
         email,
       },
       process.env.JWT_SIGNUP_KEY,
-      "10m"
+      10*60*1000
     );
 
-    const time = await localTime(10);
+    const time = localTime(10);
 
     // <div style="display: block; text-align: center;">
     //     <img width="200" height="200" style="margin: 1rem;" src="https://res.cloudinary.com/dh96uxb54/image/upload/v1697446308/avtars/apple-touch-icon_ypdhev.png" alt="Logo" />
@@ -92,8 +92,8 @@ exports.registerUser = async (req, res, next) => {
       width: 150,
       crop: "scale",
     });
-    let createDate = await localTime(0);
-    let updateDate = await localTime(0);
+    let createDate = localTime(0);
+    let updateDate = localTime(0);
     const user = await User.create({
       name,
       email,
@@ -174,10 +174,10 @@ exports.ForgatePassword = async (req, res, next) => {
         email,
       },
       process.env.JWT_PASSWORD_KEY,
-      "10m"
+      10*60*1000
     );
 
-    const time = await localTime(10);
+    const time = localTime(10);
 
     const emailData = {
       email,
@@ -240,7 +240,7 @@ exports.resetPassword = async (req, res, next) => {
       }
 
       user.password = newPassword;
-      user.updateDate = await localTime(0);
+      user.updateDate = localTime(0);
 
       await user.save();
 
@@ -405,7 +405,7 @@ exports.updatePassword = async (req, res, next) => {
     }
 
     user.password = newPassword;
-    user.updateDate = await localTime(0);
+    user.updateDate = localTime(0);
 
     await user.save();
     res.status(200).json({
@@ -437,10 +437,10 @@ exports.updateEmailRequest = async (req, res, next) => {
         id: req.user.id,
       },
       process.env.JWT_CHANGE_PASSWORD_KEY,
-      "10m"
+      10*60*1000
     );
 
-    const time = await localTime(10);
+    const time = localTime(10);
     const currentUser = await User.findById(req.user.id);
 
     const emailData = {
@@ -491,7 +491,7 @@ exports.updateEmailConfirm = async (req, res, next) => {
         401,
         "Unable to verify user. token has been expire or wrong token"
       );
-    let updateDate = await localTime(0);
+    let updateDate = localTime(0);
     const { email, id } = decoded;
     const user = await User.findByIdAndUpdate(
       id,
@@ -656,7 +656,7 @@ exports.updateProfile = async (req, res, next) => {
         url: myCloud.secure_url,
       };
     }
-    updatedData.updateDate = await localTime(0);
+    updatedData.updateDate = localTime(0);
     const user = await User.findByIdAndUpdate(req.user.id, updatedData, {
       new: true,
       runValidators: true,

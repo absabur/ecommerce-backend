@@ -14,7 +14,7 @@ app.listen(process.env.PORT, async () => {
   await cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,
-    api_secret: process.env.API_SERVER,
+    api_secret: process.env.API_SECRET,
   });
   console.log(`cloudinary is connected`);
   console.log("Server is running at https://ecommerce2api.onrender.com");

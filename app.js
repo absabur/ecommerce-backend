@@ -15,9 +15,10 @@ require("dotenv").config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const clientUrl = process.env.clientUrl;
+
 app.use(
   cors({
-    origin: [clientUrl, "http://localhost:3000", "http://127.0.0.1"],
+    origin: clientUrl,
     credentials: true,
   })
 );
